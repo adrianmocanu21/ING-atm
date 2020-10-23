@@ -1,15 +1,17 @@
 package com.adrian.mocanu.atm.controller;
 
 import com.adrian.mocanu.atm.service.CurrencyService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.adrian.mocanu.atm.validator.SingleKeyHashMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/internal-api/currency")
+@Validated
 public class InternalCurrencyController {
 
     private final CurrencyService currencyService;
@@ -19,7 +21,8 @@ public class InternalCurrencyController {
     }
 
     @PostMapping
-    public void addCurrency(@RequestBody Map<String, Integer> pairs) {
+    public ResponseEntity addCurrency(@RequestBody @Size(min = 1, max = 100) SingleKeyHashMap pairs) {
         currencyService.addCurrency(pairs);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

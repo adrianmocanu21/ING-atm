@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 @Service
 public class CurrencyService {
 
-    private static final int TOTAL_NUMBER_OF_ACCEPTED_BILLS = 4;
+    private static final int TOTAL_NUMBER_OF_ACCEPTED_BILLS = 100000;
 
     private final CurrencyRepository currencyRepository;
 
