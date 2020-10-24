@@ -24,13 +24,16 @@ public class CurrencyService {
     }
 
     public List<CurrencyDb> addCurrency(Map<String, Integer> pairs) {
-        var availableBills = currencyQueryBuilder.getNumberOfAvailableBills(pairs);
-        if (availableBills < 0) {
-            //TODO can create custom exception
-            throw new RuntimeException("The number of bills is exceeded! You have added " + Math.abs(availableBills) + " more bills than expected" );
-        }
+        checkTotalNumberOfBills(pairs);
 
         return pairs.entrySet().stream().map(entry -> new Currency(entry.getKey(), entry.getValue())).map(this::createOrUpdateCurrency).collect(Collectors.toList());
+    }
+
+    private void checkTotalNumberOfBills(Map<String, Integer> pairs) {
+        var availableBills = currencyQueryBuilder.getNumberOfAvailableBills(pairs);
+        if (availableBills < 0) {
+            throw new RuntimeException("The number of bills is exceeded! You are trying to add " + Math.abs(availableBills) + " more bills than expected" );
+        }
     }
 
     private CurrencyDb createOrUpdateCurrency(Currency currency) {

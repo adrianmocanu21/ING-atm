@@ -10,7 +10,7 @@ import java.util.Map;
 @Service
 public class CurrencyQueryBuilder {
 
-    private static final int TOTAL_NUMBER_OF_ACCEPTED_BILLS = 100000;
+    private static int TOTAL_NUMBER_OF_ACCEPTED_BILLS = 100000;
 
     private final MongoTemplate mongoTemplate;
 
@@ -25,6 +25,7 @@ public class CurrencyQueryBuilder {
         if (numberOfExistingBills == null) {
             numberOfExistingBills = new NumberOfBills(0);
         }
+
         var desiredNumberOfBills = billsToBeAdded + numberOfExistingBills.getTotalNumberOfBills();
 
         return TOTAL_NUMBER_OF_ACCEPTED_BILLS - desiredNumberOfBills;
@@ -34,4 +35,7 @@ public class CurrencyQueryBuilder {
         return Aggregation.newAggregation(Aggregation.group().sum("numberOfBills").as("totalNumberOfBills"), Aggregation.project().andExclude("_id"));
     }
 
+    public static void setTotalNumberOfAcceptedBills(int totalNumberOfAcceptedBills) {
+        TOTAL_NUMBER_OF_ACCEPTED_BILLS = totalNumberOfAcceptedBills;
+    }
 }

@@ -25,4 +25,8 @@ public class CurrencyDb {
     public void increaseNumberOfBills(Integer numberOfBills) {
         this.numberOfBills = this.numberOfBills + numberOfBills;
     }
+
+    public Integer getNumberOfBills() {
+        return numberOfBills;
+    }
 }

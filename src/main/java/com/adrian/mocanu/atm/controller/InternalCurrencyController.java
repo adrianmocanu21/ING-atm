@@ -2,7 +2,7 @@ package com.adrian.mocanu.atm.controller;
 
 import com.adrian.mocanu.atm.model.CurrencyDb;
 import com.adrian.mocanu.atm.service.CurrencyService;
-import com.adrian.mocanu.atm.validator.SingleKeyHashMap;
+import com.adrian.mocanu.atm.model.ValidatedHashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +21,9 @@ public class InternalCurrencyController {
         this.currencyService = currencyService;
     }
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public List<CurrencyDb> addCurrency(@RequestBody @Size(min = 1, max = 100) SingleKeyHashMap pairs) {
+    public List<CurrencyDb> addCurrency(@RequestBody @Size(min = 1, max = 100) ValidatedHashMap pairs) {
         return currencyService.addCurrency(pairs);
     }
 }

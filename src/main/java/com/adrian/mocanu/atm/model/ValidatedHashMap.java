@@ -1,8 +1,12 @@
-package com.adrian.mocanu.atm.validator;
+package com.adrian.mocanu.atm.model;
 
 import java.util.HashMap;
 
-public class SingleKeyHashMap extends HashMap<String, Integer> {
+public class ValidatedHashMap extends HashMap<String, Integer> {
+
+    public static final int MIN_DENOMINATION_VALUE = 1;
+
+    public static final int MAX_DENOMINATION_VALUE = 1000;
 
     @Override
     public Integer put(String key, Integer value) {
@@ -28,14 +32,12 @@ public class SingleKeyHashMap extends HashMap<String, Integer> {
     }
 
     private void isInBoundaries(String key) {
-        var minVal = 1;
-        var maxVal = 1000;
         var intKey = Integer.parseInt(key);
-        if (intKey < minVal) {
-            throw new IllegalArgumentException("Denomination " + key + " must be greater than " + minVal) ;
+        if (intKey < MIN_DENOMINATION_VALUE) {
+            throw new IllegalArgumentException("Denomination " + key + " must be greater than " + MIN_DENOMINATION_VALUE) ;
         }
-        if (intKey > maxVal) {
-            throw new IllegalArgumentException("Denomination " + key + " must be smaller than " + maxVal) ;
+        if (intKey > MAX_DENOMINATION_VALUE) {
+            throw new IllegalArgumentException("Denomination " + key + " must be smaller than " + MAX_DENOMINATION_VALUE) ;
         }
 
     }
