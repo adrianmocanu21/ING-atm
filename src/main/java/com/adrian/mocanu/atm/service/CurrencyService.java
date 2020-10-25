@@ -9,6 +9,7 @@ import com.adrian.mocanu.atm.repository.CurrencyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class CurrencyService {
         if (availableCurrencyValue < amount) {
             throw new OutOfFundsException("We do not have this amount! Try as smaller value");
         }
-        var matches = findBillsToMatchAmount(availableBills, amount);
+        var matches = BillProcessor.findBillsToMatchAmount(availableBills, amount);
         var extractedBills = matches.stream().findFirst().map(sortBills())
                 .orElseThrow(() -> new OutOfFundsException("We do not have this amount! Try as smaller value"));
         updateNumberOfExtractedBills(extractedBills);
@@ -71,17 +72,18 @@ public class CurrencyService {
     private void updateNumberOfExtractedBills(Map<String, Integer> extractedBills) {
         extractedBills.entrySet().forEach(entry -> {
             var currencyDbOpt = currencyRepository.findByBillDenomination(entry.getKey());
-            currencyDbOpt.map(updateNumberOfBillsForGivenDenomination(entry)).orElseThrow();
+            currencyDbOpt.ifPresent(updateNumberOfBillsForGivenDenomination(entry));
         });
     }
 
-    private Function<CurrencyDb, CurrencyDb> updateNumberOfBillsForGivenDenomination(Map.Entry<String, Integer> entry) {
+    private Consumer<CurrencyDb> updateNumberOfBillsForGivenDenomination(Map.Entry<String, Integer> entry) {
         return currencyDb -> {
             currencyDb.updateNumberOfBills(entry.getValue());
             if (currencyDb.getNumberOfBills() == 0) {
                 currencyRepository.delete(currencyDb);
+            } else {
+                currencyRepository.save(currencyDb);
             }
-            return currencyRepository.save(currencyDb);
         };
     }
 
@@ -110,37 +112,4 @@ public class CurrencyService {
                 return currencyRepository.save(currencyDb);
         };
     }
-
-    private static List<ArrayList<Integer>> findBillsToMatchAmount(ArrayList<Integer> bills, int amount) {
-        var matches = new ArrayList<ArrayList<Integer>>();
-        findBillsToMatchAmountRecursively(bills, amount, new ArrayList<>(), matches);
-
-        return matches;
-	}
-
-
-	private static void findBillsToMatchAmountRecursively(ArrayList<Integer> bills, int amount,
-                                                          ArrayList<Integer> partial,
-                                                          ArrayList<ArrayList<Integer>> matches) {
-		int s = 0;
-
-		for (int x: partial) {
-			s += x;
-		}
-		if (s == amount) {
-			matches.add(partial);
-		}
-
-		if (s >= amount) {
-			return;
-		}
-
-		for (int i=0; i < bills.size(); i++) {
-            ArrayList<Integer> remaining = new ArrayList<>(bills.subList(i+1, bills.size()));
-			ArrayList<Integer> suitableBills = new ArrayList<>(partial);
-			suitableBills.add(bills.get(i));
-			findBillsToMatchAmountRecursively(remaining, amount, suitableBills, matches);
-		}
-
-	}
 }

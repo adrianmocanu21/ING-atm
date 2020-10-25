@@ -1,9 +1,7 @@
 package com.adrian.mocanu.atm.controller;
 
-import com.adrian.mocanu.atm.ApiTestSetup;
 import com.adrian.mocanu.atm.TestUtils;
 import com.adrian.mocanu.atm.repository.CurrencyRepository;
-import com.adrian.mocanu.atm.service.CurrencyService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,15 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class InternalCurrencyControllerTest extends ApiTestSetup {
+class InternalCurrencyControllerTest {
 
     private final String PATH = "/internal-api/currency";
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private CurrencyService currencyService;
 
     @Value("classpath:duplicateKeyPostRequest.json")
     private Resource duplicateKeyPostJson;
@@ -50,7 +45,7 @@ public class InternalCurrencyControllerTest extends ApiTestSetup {
     private CurrencyRepository currencyRepository;
 
     @BeforeEach
-    void init() {
+    void cleanRepository() {
         currencyRepository.deleteAll();
     }
 

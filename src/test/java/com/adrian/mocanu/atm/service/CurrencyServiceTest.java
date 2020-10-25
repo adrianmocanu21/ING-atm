@@ -1,6 +1,5 @@
 package com.adrian.mocanu.atm.service;
 
-import com.adrian.mocanu.atm.ApiTestSetup;
 import com.adrian.mocanu.atm.TestUtils;
 import com.adrian.mocanu.atm.model.CurrencyDb;
 import com.adrian.mocanu.atm.repository.CurrencyQueryBuilder;
@@ -19,14 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @SpringBootTest
-class CurrencyServiceTest extends ApiTestSetup {
-
+class CurrencyServiceTest {
 
     @Autowired
     private CurrencyService currencyService;
-
-    @Autowired
-    private CurrencyQueryBuilder currencyQueryBuilder;
 
     @Autowired
     private CurrencyRepository currencyRepository;

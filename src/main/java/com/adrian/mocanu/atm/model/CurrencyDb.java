@@ -35,11 +35,7 @@ public class CurrencyDb {
     }
 
     public Integer getAvailableAmountOfCurrency() {
-        return numberOfBills + getBillDenominationAsInt();
-    }
-
-    public void setNumberOfBills(Integer numberOfBills) {
-        this.numberOfBills = numberOfBills;
+        return numberOfBills * getBillDenominationAsInt();
     }
 
     public void updateNumberOfBills(Integer extractedBills) {

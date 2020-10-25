@@ -18,7 +18,6 @@ public class CurrencyController {
     }
 
     @GetMapping("/{amount}")
-    @ResponseStatus
     public Map<String, Integer> addCurrency(@PathVariable Integer amount) {
         return currencyService.getCurrency(amount);
     }
