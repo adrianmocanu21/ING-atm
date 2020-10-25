@@ -26,7 +26,23 @@ public class CurrencyDb {
         this.numberOfBills = this.numberOfBills + numberOfBills;
     }
 
+    public int getBillDenominationAsInt() {
+        return Integer.parseInt(billDenomination);
+    }
+
     public Integer getNumberOfBills() {
         return numberOfBills;
+    }
+
+    public Integer getAvailableAmountOfCurrency() {
+        return numberOfBills + getBillDenominationAsInt();
+    }
+
+    public void setNumberOfBills(Integer numberOfBills) {
+        this.numberOfBills = numberOfBills;
+    }
+
+    public void updateNumberOfBills(Integer extractedBills) {
+        this.numberOfBills = this.numberOfBills - extractedBills;
     }
 }

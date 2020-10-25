@@ -6,8 +6,7 @@ import com.adrian.mocanu.atm.repository.CurrencyQueryBuilder;
 import com.adrian.mocanu.atm.repository.CurrencyRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,13 +25,69 @@ public class CurrencyService {
     public List<CurrencyDb> addCurrency(Map<String, Integer> pairs) {
         checkTotalNumberOfBills(pairs);
 
-        return pairs.entrySet().stream().map(entry -> new Currency(entry.getKey(), entry.getValue())).map(this::createOrUpdateCurrency).collect(Collectors.toList());
+        return pairs.entrySet().stream().map(entry -> new Currency(entry.getKey(), entry.getValue()))
+                .map(this::createOrUpdateCurrency).collect(Collectors.toList());
+    }
+
+    public Map<String, Integer> getCurrency(Integer amount) {
+        var currencyList = currencyRepository.findAll();
+        var availableCurrencyValue = 0;
+        var availableBills = new ArrayList<Integer>();
+
+        for (CurrencyDb currency : currencyList) {
+            availableCurrencyValue = availableCurrencyValue + currency.getAvailableAmountOfCurrency();
+
+            for (int i = 0; i <= currency.getNumberOfBills(); i++) {
+                availableBills.add(currency.getBillDenominationAsInt());
+            }
+        }
+        if (availableCurrencyValue == 0) {
+            throw new RuntimeException("The ATM is out of cash! Please try later");
+        }
+        if (availableCurrencyValue < amount) {
+            throw new RuntimeException("We do not have this amount! Try as smaller value");
+        }
+        var matches = findBillsToMatchAmount(availableBills, amount);
+        var extractedBills = matches.stream().findFirst().map(sortBills())
+                .orElseThrow(() -> new RuntimeException("We do not have this amount! Try as smaller value"));
+        updateNumberOfExtractedBills(extractedBills);
+
+        return extractedBills;
+    }
+
+    private Function<ArrayList<Integer>, HashMap<String, Integer>> sortBills() {
+        return match ->
+        {
+            var response = new HashMap<String, Integer>();
+            for (Integer bill: match) {
+                response.merge(bill.toString(), 1, Integer::sum);
+            }
+            return response;
+        };
+    }
+
+    private void updateNumberOfExtractedBills(Map<String, Integer> extractedBills) {
+        extractedBills.entrySet().forEach(entry -> {
+            var currencyDbOpt = currencyRepository.findByBillDenomination(entry.getKey());
+            currencyDbOpt.map(updateNumberOfBillsForGivenDenomination(entry)).orElseThrow();
+        });
+    }
+
+    private Function<CurrencyDb, CurrencyDb> updateNumberOfBillsForGivenDenomination(Map.Entry<String, Integer> entry) {
+        return currencyDb -> {
+            currencyDb.updateNumberOfBills(entry.getValue());
+            if (currencyDb.getNumberOfBills() == 0) {
+                currencyRepository.delete(currencyDb);
+            }
+            return currencyRepository.save(currencyDb);
+        };
     }
 
     private void checkTotalNumberOfBills(Map<String, Integer> pairs) {
         var availableBills = currencyQueryBuilder.getNumberOfAvailableBills(pairs);
         if (availableBills < 0) {
-            throw new RuntimeException("The number of bills is exceeded! You are trying to add " + Math.abs(availableBills) + " more bills than expected" );
+            throw new RuntimeException("The number of bills is exceeded! You are trying to add "
+                    + Math.abs(availableBills) + " more bills than expected" );
         }
     }
 
@@ -53,4 +108,37 @@ public class CurrencyService {
                 return currencyRepository.save(currencyDb);
         };
     }
+
+    private static List<ArrayList<Integer>> findBillsToMatchAmount(ArrayList<Integer> bills, int amount) {
+        var matches = new ArrayList<ArrayList<Integer>>();
+        findBillsToMatchAmountRecursively(bills, amount, new ArrayList<>(), matches);
+
+        return matches;
+	}
+
+
+	private static void findBillsToMatchAmountRecursively(ArrayList<Integer> bills, int amount,
+                                                          ArrayList<Integer> partial,
+                                                          ArrayList<ArrayList<Integer>> matches) {
+		int s = 0;
+
+		for (int x: partial) {
+			s += x;
+		}
+		if (s == amount) {
+			matches.add(partial);
+		}
+
+		if (s >= amount) {
+			return;
+		}
+
+		for (int i=0; i < bills.size(); i++) {
+            ArrayList<Integer> remaining = new ArrayList<>(bills.subList(i+1, bills.size()));
+			ArrayList<Integer> suitableBills = new ArrayList<>(partial);
+			suitableBills.add(bills.get(i));
+			findBillsToMatchAmountRecursively(remaining, amount, suitableBills, matches);
+		}
+
+	}
 }
