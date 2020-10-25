@@ -10,7 +10,7 @@ import java.util.Map;
 @Service
 public class CurrencyQueryBuilder {
 
-    private static int TOTAL_NUMBER_OF_ACCEPTED_BILLS = 20;
+    private static int TOTAL_NUMBER_OF_ACCEPTED_BILLS = 100000;
 
     private final MongoTemplate mongoTemplate;
 

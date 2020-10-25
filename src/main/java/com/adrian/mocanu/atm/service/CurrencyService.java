@@ -1,5 +1,7 @@
 package com.adrian.mocanu.atm.service;
 
+import com.adrian.mocanu.atm.exception.ExceededAmountException;
+import com.adrian.mocanu.atm.exception.OutOfFundsException;
 import com.adrian.mocanu.atm.model.Currency;
 import com.adrian.mocanu.atm.model.CurrencyDb;
 import com.adrian.mocanu.atm.repository.CurrencyQueryBuilder;
@@ -42,14 +44,14 @@ public class CurrencyService {
             }
         }
         if (availableCurrencyValue == 0) {
-            throw new RuntimeException("The ATM is out of cash! Please try later");
+            throw new OutOfFundsException("The ATM is out of cash! Please try later");
         }
         if (availableCurrencyValue < amount) {
-            throw new RuntimeException("We do not have this amount! Try as smaller value");
+            throw new OutOfFundsException("We do not have this amount! Try as smaller value");
         }
         var matches = findBillsToMatchAmount(availableBills, amount);
         var extractedBills = matches.stream().findFirst().map(sortBills())
-                .orElseThrow(() -> new RuntimeException("We do not have this amount! Try as smaller value"));
+                .orElseThrow(() -> new OutOfFundsException("We do not have this amount! Try as smaller value"));
         updateNumberOfExtractedBills(extractedBills);
 
         return extractedBills;
@@ -86,7 +88,7 @@ public class CurrencyService {
     private void checkTotalNumberOfBills(Map<String, Integer> pairs) {
         var availableBills = currencyQueryBuilder.getNumberOfAvailableBills(pairs);
         if (availableBills < 0) {
-            throw new RuntimeException("The number of bills is exceeded! You are trying to add "
+            throw new ExceededAmountException("The number of bills is exceeded! You are trying to add "
                     + Math.abs(availableBills) + " more bills than expected" );
         }
     }

@@ -26,4 +26,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(status).body(
                 new ErrorBody(HttpStatus.BAD_REQUEST.value(), status.getReasonPhrase(), ex.getMessage()));
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    ResponseEntity<ErrorBody> handleRuntimeException(RuntimeException e) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(httpStatus).body(
+                new ErrorBody(httpStatus.value(), httpStatus.name(), e.getMessage()));
+    }
 }
