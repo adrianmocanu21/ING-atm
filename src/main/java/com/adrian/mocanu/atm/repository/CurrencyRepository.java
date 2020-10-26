@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface CurrencyRepository extends MongoRepository<CurrencyDb, String> {
 
-    Optional<CurrencyDb> findByBillDenomination(String billDenomination);
+	Optional<CurrencyDb> findByBillDenomination(String billDenomination);
 
 }

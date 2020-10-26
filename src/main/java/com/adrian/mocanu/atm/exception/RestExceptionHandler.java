@@ -14,23 +14,28 @@ import javax.validation.ConstraintViolationException;
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    ResponseEntity<ErrorBody> handleConstraintValidationException(ConstraintViolationException e) {
-        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(httpStatus).body(
-                new ErrorBody(httpStatus.value(), httpStatus.name(), e.getMessage()));
-    }
+	@ExceptionHandler(ConstraintViolationException.class)
+	ResponseEntity<ErrorBody> handleConstraintValidationException(
+			ConstraintViolationException e) {
+		HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+		return ResponseEntity.status(httpStatus).body(
+				new ErrorBody(httpStatus.value(), httpStatus.name(), e.getMessage()));
+	}
 
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return ResponseEntity.status(status).body(
-                new ErrorBody(HttpStatus.BAD_REQUEST.value(), status.getReasonPhrase(), ex.getMessage()));
-    }
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotReadable(
+			HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status,
+			WebRequest request) {
+		return ResponseEntity.status(status)
+				.body(new ErrorBody(HttpStatus.BAD_REQUEST.value(),
+						status.getReasonPhrase(), ex.getMessage()));
+	}
 
-    @ExceptionHandler(RuntimeException.class)
-    ResponseEntity<ErrorBody> handleRuntimeException(RuntimeException e) {
-        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(httpStatus).body(
-                new ErrorBody(httpStatus.value(), httpStatus.name(), e.getMessage()));
-    }
+	@ExceptionHandler(RuntimeException.class)
+	ResponseEntity<ErrorBody> handleRuntimeException(RuntimeException e) {
+		HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+		return ResponseEntity.status(httpStatus).body(
+				new ErrorBody(httpStatus.value(), httpStatus.name(), e.getMessage()));
+	}
+
 }

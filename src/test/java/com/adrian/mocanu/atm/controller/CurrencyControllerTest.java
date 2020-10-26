@@ -23,90 +23,100 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class CurrencyControllerTest {
 
-    private final String PATH = "/api/currency";
+	private final String PATH = "/api/currency";
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Autowired
-    private CurrencyRepository currencyRepository;
+	@Autowired
+	private CurrencyRepository currencyRepository;
 
-    @BeforeEach
-    void cleanRepository() {
-        currencyRepository.deleteAll();
-    }
+	@BeforeEach
+	void cleanRepository() {
+		currencyRepository.deleteAll();
+	}
 
-    @Test
-    void getCurrencyReturnsDesiredAmount() throws Exception {
-        var desiredAmount = 37;
-        var currencyDbs = TestUtils.generateCurrencyDbs(5);
-        currencyRepository.saveAll(currencyDbs);
-        this.mockMvc.perform(get(PATH + "/" + desiredAmount)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
+	@Test
+	void getCurrencyReturnsDesiredAmount() throws Exception {
+		var desiredAmount = 37;
+		var currencyDbs = TestUtils.generateCurrencyDbs(10);
+		currencyRepository.saveAll(currencyDbs);
 
-    @Test
-    void getCurrencyReturnsDesiredAmountAndUpdatesDb() throws Exception {
-        var desiredAmount = 5;
-        var currencyDbs = TestUtils.generateCurrencyDbs(2);
-        currencyRepository.saveAll(currencyDbs);
+		this.mockMvc
+				.perform(get(PATH + "/" + desiredAmount)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+	}
 
-        this.mockMvc.perform(get(PATH + "/" + desiredAmount)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath("$.1").value(1))
-                .andExpect(jsonPath("$.2").value(2));
+	@Test
+	void getCurrencyReturnsDesiredAmountAndUpdatesDb() throws Exception {
+		var desiredAmount = 5;
+		var currencyDbs = TestUtils.generateCurrencyDbs(2);
+		currencyRepository.saveAll(currencyDbs);
 
-        assertThat(currencyRepository.findByBillDenomination("1")).isEqualTo(Optional.empty());
-        assertThat(currencyRepository.findByBillDenomination("2")).isEqualTo(Optional.empty());
+		this.mockMvc
+				.perform(get(PATH + "/" + desiredAmount)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andDo(print())
+				.andExpect(jsonPath("$.1").value(1)).andExpect(jsonPath("$.2").value(2));
 
-    }
+		assertThat(currencyRepository.findByBillDenomination("1"))
+				.isEqualTo(Optional.empty());
+		assertThat(currencyRepository.findByBillDenomination("2"))
+				.isEqualTo(Optional.empty());
 
-    @Test
-    void getCurrencyThrowsExceptionWhenTheAmountIsExceeded() throws Exception {
-        var desiredAmount = 7;
-        var currencyDbs = TestUtils.generateCurrencyDbs(2);
-        currencyRepository.saveAll(currencyDbs);
+	}
 
-        this.mockMvc.perform(get(PATH + "/" + desiredAmount)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.title").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.errorMessage").value("We do not have this amount! Try as smaller value"));
+	@Test
+	void getCurrencyThrowsExceptionWhenTheAmountIsExceeded() throws Exception {
+		var desiredAmount = 7;
+		var currencyDbs = TestUtils.generateCurrencyDbs(2);
+		currencyRepository.saveAll(currencyDbs);
 
-    }
+		this.mockMvc
+				.perform(get(PATH + "/" + desiredAmount)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.title").value("BAD_REQUEST"))
+				.andExpect(jsonPath("$.errorMessage")
+						.value("We do not have this amount! Try as smaller value"));
 
-    @Test
-    void getCurrencyThrowsExceptionWhenTheAtmIsEmpty() throws Exception {
-        var desiredAmount = 7;
+	}
 
-        this.mockMvc.perform(get(PATH + "/" + desiredAmount)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.title").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.errorMessage").value("The ATM is out of cash! Please try later"));
+	@Test
+	void getCurrencyThrowsExceptionWhenTheAtmIsEmpty() throws Exception {
+		var desiredAmount = 7;
 
-    }
+		this.mockMvc
+				.perform(get(PATH + "/" + desiredAmount)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.title").value("BAD_REQUEST"))
+				.andExpect(jsonPath("$.errorMessage")
+						.value("The ATM is out of cash! Please try later"));
 
-    @Test
-    void getCurrencyThrowsExceptionWhenAtmHasTheDesiredAmountButNoSuitableBills() throws Exception {
-        var desiredAmount = 7;
-        var currency = new CurrencyDb("5",2);
-        currencyRepository.save(currency);
+	}
 
-        this.mockMvc.perform(get(PATH + "/" + desiredAmount)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.title").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.errorMessage").value("We do not have this amount! Try as smaller value"));
-        assertThat(currencyRepository.findByBillDenomination("5").get().getNumberOfBills()).isEqualTo(2);
-    }
+	@Test
+	void getCurrencyThrowsExceptionWhenAtmHasTheDesiredAmountButNoSuitableBills()
+			throws Exception {
+		var desiredAmount = 7;
+		var currency = new CurrencyDb("5", 2);
+		currencyRepository.save(currency);
+
+		this.mockMvc
+				.perform(get(PATH + "/" + desiredAmount)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andDo(print()).andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.title").value("BAD_REQUEST"))
+				.andExpect(jsonPath("$.errorMessage")
+						.value("We do not have this amount! Try as smaller value"));
+		assertThat(
+				currencyRepository.findByBillDenomination("5").get().getNumberOfBills())
+						.isEqualTo(2);
+	}
+
 }

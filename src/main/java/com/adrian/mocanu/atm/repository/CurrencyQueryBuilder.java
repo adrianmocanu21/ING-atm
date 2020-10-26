@@ -10,32 +10,39 @@ import java.util.Map;
 @Service
 public class CurrencyQueryBuilder {
 
-    private static int TOTAL_NUMBER_OF_ACCEPTED_BILLS = 100000;
+	private static int TOTAL_NUMBER_OF_ACCEPTED_BILLS = 100000;
 
-    private final MongoTemplate mongoTemplate;
+	private final MongoTemplate mongoTemplate;
 
-    public CurrencyQueryBuilder(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
+	public CurrencyQueryBuilder(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
 
-    public int getNumberOfAvailableBills(Map<String, Integer> pairs) {
-        var billsToBeAdded = pairs.values().stream().reduce(0, Integer::sum);
-        var availableBills = mongoTemplate.aggregate(getNumberOfAvailableBillsAggregation(),"currency", NumberOfBills.class).getUniqueMappedResult();
+	public int getNumberOfAvailableBills(Map<String, Integer> pairs) {
+		var billsToBeAdded = pairs.values().stream().reduce(0, Integer::sum);
+		var availableBills = mongoTemplate
+				.aggregate(getNumberOfAvailableBillsAggregation(), "currency",
+						NumberOfBills.class)
+				.getUniqueMappedResult();
 
-        if (availableBills == null) {
-            availableBills = new NumberOfBills(0);
-        }
+		if (availableBills == null) {
+			availableBills = new NumberOfBills(0);
+		}
 
-        var desiredNumberOfBills = billsToBeAdded + availableBills.getTotalNumberOfBills();
+		var desiredNumberOfBills = billsToBeAdded
+				+ availableBills.getTotalNumberOfBills();
 
-        return TOTAL_NUMBER_OF_ACCEPTED_BILLS - desiredNumberOfBills;
-    }
+		return TOTAL_NUMBER_OF_ACCEPTED_BILLS - desiredNumberOfBills;
+	}
 
-    private Aggregation getNumberOfAvailableBillsAggregation() {
-        return Aggregation.newAggregation(Aggregation.group().sum("numberOfBills").as("totalNumberOfBills"), Aggregation.project().andExclude("_id"));
-    }
+	private Aggregation getNumberOfAvailableBillsAggregation() {
+		return Aggregation.newAggregation(
+				Aggregation.group().sum("numberOfBills").as("totalNumberOfBills"),
+				Aggregation.project().andExclude("_id"));
+	}
 
-    public static void setTotalNumberOfAcceptedBills(int totalNumberOfAcceptedBills) {
-        TOTAL_NUMBER_OF_ACCEPTED_BILLS = totalNumberOfAcceptedBills;
-    }
+	public static void setTotalNumberOfAcceptedBills(int totalNumberOfAcceptedBills) {
+		TOTAL_NUMBER_OF_ACCEPTED_BILLS = totalNumberOfAcceptedBills;
+	}
+
 }

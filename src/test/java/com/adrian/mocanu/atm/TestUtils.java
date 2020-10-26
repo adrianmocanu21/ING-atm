@@ -16,28 +16,29 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class TestUtils {
 
-    public static String convertResourceToString(Resource resource) {
+	public static String convertResourceToString(Resource resource) {
 
-        try {
-            Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
-            return FileCopyUtils.copyToString(reader);
-        }
-        catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
+		try {
+			Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8);
+			return FileCopyUtils.copyToString(reader);
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
 
-    public static void generatePairs(Map<String, Integer> pairs, int numberOfPairs) {
-        for (int i = 1; i <= numberOfPairs; i++ ) {
-            pairs.put(String.valueOf(i), i);
-        }
-    }
+	public static void generatePairs(Map<String, Integer> pairs, int numberOfPairs) {
+		for (int i = 1; i <= numberOfPairs; i++) {
+			pairs.put(String.valueOf(i), i);
+		}
+	}
 
-    public static List<CurrencyDb>  generateCurrencyDbs(int numberOfCurrencies) {
-        var currencyDbs = new ArrayList<CurrencyDb>();
-        for (int i = 1; i <= numberOfCurrencies; i++ ) {
-            currencyDbs.add(new CurrencyDb(String.valueOf(i), i));
-        }
-        return currencyDbs;
-    }
+	public static List<CurrencyDb> generateCurrencyDbs(int numberOfCurrencies) {
+		var currencyDbs = new ArrayList<CurrencyDb>();
+		for (int i = 1; i <= numberOfCurrencies; i++) {
+			currencyDbs.add(new CurrencyDb(String.valueOf(i), i));
+		}
+		return currencyDbs;
+	}
+
 }

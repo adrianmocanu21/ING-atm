@@ -1,5 +1,6 @@
 package com.adrian.mocanu.atm.controller;
 
+import com.adrian.mocanu.atm.service.CurrencyManipulator;
 import com.adrian.mocanu.atm.service.CurrencyService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -11,14 +12,15 @@ import java.util.Map;
 @Validated
 public class CurrencyController {
 
-    private final CurrencyService currencyService;
+	private final CurrencyManipulator currencyManipulator;
 
-    public CurrencyController(CurrencyService currencyService) {
-        this.currencyService = currencyService;
-    }
+	public CurrencyController(CurrencyService currencyManipulator) {
+		this.currencyManipulator = currencyManipulator;
+	}
 
-    @GetMapping("/{amount}")
-    public Map<String, Integer> addCurrency(@PathVariable Integer amount) {
-        return currencyService.getCurrency(amount);
-    }
+	@GetMapping("/{amount}")
+	public Map<String, Integer> addCurrency(@PathVariable Integer amount) {
+		return currencyManipulator.getCurrency(amount);
+	}
+
 }
