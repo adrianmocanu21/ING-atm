@@ -1,5 +1,6 @@
 package com.adrian.mocanu.atm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,6 +27,7 @@ public class CurrencyDb {
 		this.numberOfBills = this.numberOfBills + numberOfBills;
 	}
 
+	@JsonIgnore
 	public int getBillDenominationAsInt() {
 		return Integer.parseInt(billDenomination);
 	}
@@ -34,8 +36,13 @@ public class CurrencyDb {
 		return numberOfBills;
 	}
 
+	@JsonIgnore
 	public Integer getAvailableAmountOfCurrency() {
 		return numberOfBills * getBillDenominationAsInt();
+	}
+
+	public boolean denominationIsWithinAmount(int amount) {
+		return getBillDenominationAsInt() <= amount;
 	}
 
 	public void updateNumberOfBills(Integer extractedBills) {

@@ -36,7 +36,9 @@ public class CurrencyService
 	}
 
 	public Map<String, Integer> getCurrency(Integer amount) {
-		var currencyList = currencyRepository.findAll();
+		var currencyList = currencyRepository.findAll().stream()
+				.filter(currencyDb -> currencyDb.denominationIsWithinAmount(amount))
+				.collect(Collectors.toList());
 		var availableCurrencyValue = 0;
 		var availableBills = new ArrayList<Integer>();
 
