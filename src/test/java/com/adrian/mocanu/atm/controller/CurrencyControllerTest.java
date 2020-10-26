@@ -80,7 +80,7 @@ class CurrencyControllerTest {
 				.andExpect(jsonPath("$.status").value(400))
 				.andExpect(jsonPath("$.title").value("BAD_REQUEST"))
 				.andExpect(jsonPath("$.errorMessage")
-						.value("We do not have this amount! Try as smaller value"));
+						.value("We do not have this amount! Try a smaller value"));
 
 	}
 
@@ -113,7 +113,7 @@ class CurrencyControllerTest {
 				.andExpect(jsonPath("$.status").value(400))
 				.andExpect(jsonPath("$.title").value("BAD_REQUEST"))
 				.andExpect(jsonPath("$.errorMessage")
-						.value("We do not have this amount! Try as smaller value"));
+						.value("We do not have this amount! Try a smaller value"));
 		assertThat(
 				currencyRepository.findByBillDenomination("5").get().getNumberOfBills())
 						.isEqualTo(2);

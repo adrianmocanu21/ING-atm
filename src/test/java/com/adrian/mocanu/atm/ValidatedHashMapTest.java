@@ -77,6 +77,32 @@ class ValidatedHashMapTest {
 		assertTrue(actualMessage.contains(expectedMessage));
 	}
 
+	@Test
+	void mapThrowsErrorOnOutOfBoundariesPositiveNumberOfBillsValues() {
+		var exceededValue = ValidatedHashMap.MAX_NUMBER_OF_BILLS_VALUE + 1;
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+			pairs.put("4", exceededValue);
+		});
+		String expectedMessage = "Number of bills for denomination 4 must be smaller than "
+				+ ValidatedHashMap.MAX_NUMBER_OF_BILLS_VALUE;
+		String actualMessage = exception.getMessage();
+
+		assertTrue(actualMessage.contains(expectedMessage));
+	}
+
+	@Test
+	void mapThrowsErrorOnOutOfBoundariesNegativeNumberOfBillsValues() {
+		var exceededValue = ValidatedHashMap.MIN_NUMBER_OF_BILLS_VALUE - 1;
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+			pairs.put("4", exceededValue);
+		});
+		String expectedMessage = "Number of bills for denomination 4 must be greater than "
+				+ ValidatedHashMap.MIN_NUMBER_OF_BILLS_VALUE;
+		String actualMessage = exception.getMessage();
+
+		assertTrue(actualMessage.contains(expectedMessage));
+	}
+
 	void generatePairs(int pair) {
 		pairs.put("100", 20);
 		pairs.put(String.valueOf(pair), pair);

@@ -109,7 +109,7 @@ class CurrencyServiceTest {
 
 		Exception exception = assertThrows(OutOfFundsException.class,
 				() -> currencyService.getCurrency(desiredAmount));
-		String expectedMessage = "We do not have this amount! Try as smaller value";
+		String expectedMessage = "We do not have this amount! Try a smaller value";
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
@@ -135,7 +135,7 @@ class CurrencyServiceTest {
 
 		Exception exception = assertThrows(OutOfFundsException.class,
 				() -> currencyService.getCurrency(desiredAmount));
-		String expectedMessage = "We do not have this amount! Try as smaller value";
+		String expectedMessage = "We do not have this amount! Try a smaller value";
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));

@@ -14,7 +14,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class CurrencyService implements CurrencyManipulator {
+public class CurrencyService
+		implements CurrencyAddManipulator, CurrencyRetrieveManipulator {
 
 	private final CurrencyQueryBuilder currencyQueryBuilder;
 
@@ -52,12 +53,12 @@ public class CurrencyService implements CurrencyManipulator {
 		}
 		if (availableCurrencyValue < amount) {
 			throw new OutOfFundsException(
-					"We do not have this amount! Try as smaller value");
+					"We do not have this amount! Try a smaller value");
 		}
 		var matches = new BillProcessor().findBillsToMatchAmount(availableBills, amount);
 		var extractedBills = matches.stream().findFirst().map(sortBills())
 				.orElseThrow(() -> new OutOfFundsException(
-						"We do not have this amount! Try as smaller value"));
+						"We do not have this amount! Try a smaller value"));
 		updateNumberOfExtractedBills(extractedBills);
 
 		return extractedBills;

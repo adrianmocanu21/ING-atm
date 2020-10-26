@@ -1,8 +1,7 @@
 package com.adrian.mocanu.atm.controller;
 
 import com.adrian.mocanu.atm.model.CurrencyDb;
-import com.adrian.mocanu.atm.service.CurrencyManipulator;
-import com.adrian.mocanu.atm.service.CurrencyService;
+import com.adrian.mocanu.atm.service.CurrencyAddManipulator;
 import com.adrian.mocanu.atm.model.ValidatedHashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -16,17 +15,17 @@ import java.util.List;
 @Validated
 public class InternalCurrencyController {
 
-	private final CurrencyManipulator currencyManipulator;
+	private final CurrencyAddManipulator currencyAddManipulator;
 
-	public InternalCurrencyController(CurrencyService currencyManipulator) {
-		this.currencyManipulator = currencyManipulator;
+	public InternalCurrencyController(CurrencyAddManipulator currencyAddManipulator) {
+		this.currencyAddManipulator = currencyAddManipulator;
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public List<CurrencyDb> addCurrency(
 			@RequestBody @Size(min = 1, max = 100) ValidatedHashMap pairs) {
-		return currencyManipulator.addCurrency(pairs);
+		return currencyAddManipulator.addCurrency(pairs);
 	}
 
 }
