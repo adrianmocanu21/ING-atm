@@ -45,18 +45,9 @@ public class CurrencyService
 		for (CurrencyDb currency : currencyList) {
 			availableCurrencyValue = availableCurrencyValue
 					+ currency.getAvailableAmountOfCurrency();
-
-			for (int i = 0; i <= currency.getNumberOfBills(); i++) {
-				availableBills.add(currency.getBillDenominationAsInt());
-			}
+			splitCurrencyBills(availableBills, currency);
 		}
-		if (availableCurrencyValue == 0) {
-			throw new OutOfFundsException("The ATM is out of cash! Please try later");
-		}
-		if (availableCurrencyValue < amount) {
-			throw new OutOfFundsException(
-					"We do not have this amount! Try a smaller value");
-		}
+		checkAvailableCurrency(amount, availableCurrencyValue);
 		var matches = new BillProcessor().findBillsToMatchAmount(availableBills, amount);
 		var extractedBills = matches.stream().findFirst().map(sortBills())
 				.orElseThrow(() -> new OutOfFundsException(
@@ -64,6 +55,23 @@ public class CurrencyService
 		updateNumberOfExtractedBills(extractedBills);
 
 		return extractedBills;
+	}
+
+	private void splitCurrencyBills(ArrayList<Integer> availableBills,
+			CurrencyDb currency) {
+		for (int i = 0; i <= currency.getNumberOfBills(); i++) {
+			availableBills.add(currency.getBillDenominationAsInt());
+		}
+	}
+
+	private void checkAvailableCurrency(Integer amount, int availableCurrencyValue) {
+		if (availableCurrencyValue == 0) {
+			throw new OutOfFundsException("The ATM is out of cash! Please try later");
+		}
+		if (availableCurrencyValue < amount) {
+			throw new OutOfFundsException(
+					"We do not have this amount! Try a smaller value");
+		}
 	}
 
 	private Function<ArrayList<Integer>, HashMap<String, Integer>> sortBills() {

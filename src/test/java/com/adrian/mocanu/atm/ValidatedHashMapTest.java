@@ -52,13 +52,13 @@ class ValidatedHashMapTest {
 
 	@Test
 	void mapThrowsErrorOnOutOfBoundariesNegativeKeyValues() {
-		var exceededValue = ValidatedHashMap.MIN_DENOMINATION_VALUE - 13;
+		var exceededValue = ValidatedHashMap.MIN_DENOMINATION - 13;
 
 		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			generatePairs(exceededValue);
 		});
 		String expectedMessage = "Denomination " + exceededValue
-				+ " must be greater than " + ValidatedHashMap.MIN_DENOMINATION_VALUE;
+				+ " must be greater than " + ValidatedHashMap.MIN_DENOMINATION;
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
@@ -66,12 +66,12 @@ class ValidatedHashMapTest {
 
 	@Test
 	void mapThrowsErrorOnOutOfBoundariesPositiveKeyValues() {
-		var exceededValue = ValidatedHashMap.MAX_DENOMINATION_VALUE + 1;
+		var exceededValue = ValidatedHashMap.MAX_DENOMINATION + 1;
 		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			generatePairs(exceededValue);
 		});
 		String expectedMessage = "Denomination " + exceededValue
-				+ " must be smaller than " + ValidatedHashMap.MAX_DENOMINATION_VALUE;
+				+ " must be smaller than " + ValidatedHashMap.MAX_DENOMINATION;
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
@@ -79,12 +79,12 @@ class ValidatedHashMapTest {
 
 	@Test
 	void mapThrowsErrorOnOutOfBoundariesPositiveNumberOfBillsValues() {
-		var exceededValue = ValidatedHashMap.MAX_NUMBER_OF_BILLS_VALUE + 1;
+		var exceededValue = ValidatedHashMap.MAX_NUMBER_OF_BILLS + 1;
 		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			pairs.put("4", exceededValue);
 		});
 		String expectedMessage = "Number of bills for denomination 4 must be smaller than "
-				+ ValidatedHashMap.MAX_NUMBER_OF_BILLS_VALUE;
+				+ ValidatedHashMap.MAX_NUMBER_OF_BILLS;
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
@@ -92,12 +92,12 @@ class ValidatedHashMapTest {
 
 	@Test
 	void mapThrowsErrorOnOutOfBoundariesNegativeNumberOfBillsValues() {
-		var exceededValue = ValidatedHashMap.MIN_NUMBER_OF_BILLS_VALUE - 1;
+		var exceededValue = ValidatedHashMap.MIN_NUMBER_OF_BILLS - 1;
 		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			pairs.put("4", exceededValue);
 		});
 		String expectedMessage = "Number of bills for denomination 4 must be greater than "
-				+ ValidatedHashMap.MIN_NUMBER_OF_BILLS_VALUE;
+				+ ValidatedHashMap.MIN_NUMBER_OF_BILLS;
 		String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
